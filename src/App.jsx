@@ -13,7 +13,6 @@ import PhotoGallery from './components/PhotoGallery';
 import LoveCounter from './components/LoveCounter';
 import ReasonsSection from './components/ReasonsSection';
 import LoveCarousel from './components/LoveCarousel';
-import FloatingMusicPlayer from './components/FloatingMusicPlayer';
 import FinalSurprise from './components/FinalSurprise';
 import Footer from './components/Footer';
 
@@ -133,9 +132,6 @@ export default function App() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Floating music player */}
-      <FloatingMusicPlayer />
 
       {/* Main sections */}
       <main>
