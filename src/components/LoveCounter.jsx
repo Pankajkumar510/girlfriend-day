@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
-// Set your anniversary date here (YYYY, MM-1, DD)
-const ANNIVERSARY_DATE = new Date(2024, 0, 14); // Jan 14, 2024
+// Your relationship start date — 19 June 2025
+const ANNIVERSARY_DATE = new Date(2025, 5, 19); // June 19, 2025
 
 function pad(n) {
   return String(n).padStart(2, '0');
@@ -132,7 +132,7 @@ export default function LoveCounter() {
             className="font-body text-lg mt-4"
             style={{ color: 'rgba(255,179,200,0.8)' }}
           >
-            We have created memories for...
+            Since 19th June, we have been together for...
           </motion.p>
         </div>
 
