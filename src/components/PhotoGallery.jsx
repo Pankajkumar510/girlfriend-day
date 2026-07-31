@@ -32,6 +32,30 @@ const PHOTOS = [
     label: 'Us ✨',
     caption: 'Every moment with you is a memory I treasure forever.',
   },
+  {
+    id: 5,
+    src: '/girlfriend-day/gallery/photo6.jpg',
+    label: 'Sunshine smile 🌟',
+    caption: 'Your smile is the most beautiful thing I have ever seen.',
+  },
+  {
+    id: 6,
+    src: '/girlfriend-day/gallery/photo7.jpg',
+    label: 'Pure joy 🌻',
+    caption: 'Your laugh is my favorite sound in the entire world.',
+  },
+  {
+    id: 7,
+    src: '/girlfriend-day/gallery/photo8.jpg',
+    label: 'City lights 🌉',
+    caption: 'You light up every room you walk into, just like the city at night.',
+  },
+  {
+    id: 8,
+    src: '/girlfriend-day/gallery/photo9.jpg',
+    label: 'My world 💞',
+    caption: 'With you beside me, every place feels like home.',
+  },
 ];
 
 function PhotoCard({ photo, index }) {
