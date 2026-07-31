@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function FloatingMusicPlayer({ autoPlayTrigger }) {
+export default function FloatingMusicPlayer() {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [expanded, setExpanded] = useState(false);
@@ -19,13 +19,25 @@ export default function FloatingMusicPlayer({ autoPlayTrigger }) {
   ];
   const [songIndex, setSongIndex] = useState(0);
 
-  // Trigger autoplay when overlay is dismissed
+  // Trigger autoplay on first interaction
   useEffect(() => {
-    if (autoPlayTrigger && audioRef.current) {
-      setPlaying(true);
-      audioRef.current.play().catch(e => console.log("Autoplay prevented:", e));
-    }
-  }, [autoPlayTrigger]);
+    const handleFirstInteraction = () => {
+      if (!playing && audioRef.current) {
+        setPlaying(true);
+      }
+      // Remove listeners after first interaction
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+
+    document.addEventListener('click', handleFirstInteraction);
+    document.addEventListener('touchstart', handleFirstInteraction);
+
+    return () => {
+      document.removeEventListener('click', handleFirstInteraction);
+      document.removeEventListener('touchstart', handleFirstInteraction);
+    };
+  }, [playing]);
 
   // Handle play/pause state changes
   useEffect(() => {

@@ -6,7 +6,6 @@ import ScrollProgress from './components/ScrollProgress';
 import FloatingPetals from './components/FloatingPetals';
 import HeartGarden from './components/HeartGarden';
 import EasterEgg from './components/EasterEgg';
-import IntroOverlay from './components/IntroOverlay';
 import HeroSection from './components/HeroSection';
 import LoveLetterSection from './components/LoveLetterSection';
 import MemoryTimeline from './components/MemoryTimeline';
@@ -40,7 +39,6 @@ function useEasterEgg() {
 
 export default function App() {
   const [pageLoaded, setPageLoaded] = useState(false);
-  const [introComplete, setIntroComplete] = useState(false);
   const { showEgg, setShowEgg, triggerClick, count } = useEasterEgg();
   const [titleClickCount, setTitleClickCount] = useState(0);
 
@@ -82,9 +80,6 @@ export default function App() {
       <FloatingPetals count={12} />
       <HeartGarden />
       
-      {/* Intro Overlay */}
-      <IntroOverlay onEnter={() => setIntroComplete(true)} />
-
       {/* Easter egg modal */}
       <AnimatePresence>
         {showEgg && (
@@ -140,7 +135,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Floating music player */}
-      <FloatingMusicPlayer autoPlayTrigger={introComplete} />
+      <FloatingMusicPlayer />
 
       {/* Main sections */}
       <main>
