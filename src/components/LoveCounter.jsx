@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 
-// Your relationship start date — 19 June 2025
-const ANNIVERSARY_DATE = new Date(2025, 5, 19); // June 19, 2025
+// Your relationship start date — 19 June 2026
+const ANNIVERSARY_DATE = new Date(2026, 5, 19); // June 19, 2026
 
 function pad(n) {
   return String(n).padStart(2, '0');
