@@ -86,7 +86,7 @@ export default function FloatingMusicPlayer() {
 
         {/* Text */}
         <div className="pr-3 relative z-10 hidden md:block">
-          <p className="font-script text-sm m-0" style={{ color: '#ffb3c6' }}>Ishq Wala Love</p>
+          <p className="font-script text-sm m-0" style={{ color: '#ffb3c6' }}>Pehla Nasha Instrumental</p>
           <div className="flex items-center gap-1 mt-0.5">
             {[1, 2, 3].map((bar) => (
               <motion.div
