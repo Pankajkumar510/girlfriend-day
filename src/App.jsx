@@ -13,7 +13,6 @@ import PhotoGallery from './components/PhotoGallery';
 import LoveCounter from './components/LoveCounter';
 import ReasonsSection from './components/ReasonsSection';
 import LoveCarousel from './components/LoveCarousel';
-import FinalSurprise from './components/FinalSurprise';
 import Footer from './components/Footer';
 
 // Easter egg: title click tracker
@@ -146,7 +145,6 @@ export default function App() {
         <LoveCounter />
         <ReasonsSection />
         <LoveCarousel />
-        <FinalSurprise />
       </main>
 
       <Footer />
