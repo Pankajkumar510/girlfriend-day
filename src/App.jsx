@@ -14,6 +14,7 @@ import LoveCounter from './components/LoveCounter';
 import ReasonsSection from './components/ReasonsSection';
 import LoveCarousel from './components/LoveCarousel';
 import Footer from './components/Footer';
+import FloatingMusicPlayer from './components/FloatingMusicPlayer';
 
 // Easter egg: title click tracker
 let eggClickCount = 0;
@@ -77,6 +78,7 @@ export default function App() {
       <ScrollProgress />
       <FloatingPetals count={12} />
       <HeartGarden />
+      <FloatingMusicPlayer />
       
       {/* Easter egg modal */}
       <AnimatePresence>
