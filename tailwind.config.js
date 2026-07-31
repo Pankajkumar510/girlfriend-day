@@ -38,9 +38,9 @@ export default {
         },
       },
       fontFamily: {
-        display: ['Playfair Display', 'Georgia', 'serif'],
-        body: ['Inter', 'system-ui', 'sans-serif'],
-        script: ['Dancing Script', 'cursive'],
+        display: ['"Cormorant Garamond"', 'Georgia', 'serif'],
+        body: ['Montserrat', 'system-ui', 'sans-serif'],
+        script: ['"Dancing Script"', 'cursive'],
       },
       animation: {
         'float': 'float 6s ease-in-out infinite',

@@ -1,20 +1,49 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-export default function FloatingMusicPlayer() {
+export default function FloatingMusicPlayer({ autoPlayTrigger }) {
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [expanded, setExpanded] = useState(false);
   const [currentNote, setCurrentNote] = useState(0);
   const intervalRef = useRef(null);
+  const audioRef = useRef(null);
 
   const NOTES = ['♩', '♪', '♫', '♬', '🎵'];
   const SONGS = [
-    { title: 'Perfect — Ed Sheeran', artist: 'Ed Sheeran' },
-    { title: 'All of Me — John Legend', artist: 'John Legend' },
-    { title: 'Thinking Out Loud', artist: 'Ed Sheeran' },
+    { 
+      title: 'Romantic Piano (Royalty Free)', 
+      artist: 'Bensound',
+      src: 'https://www.bensound.com/bensound-music/bensound-romantic.mp3'
+    }
   ];
   const [songIndex, setSongIndex] = useState(0);
+
+  // Trigger autoplay when overlay is dismissed
+  useEffect(() => {
+    if (autoPlayTrigger && audioRef.current) {
+      setPlaying(true);
+      audioRef.current.play().catch(e => console.log("Autoplay prevented:", e));
+    }
+  }, [autoPlayTrigger]);
+
+  // Handle play/pause state changes
+  useEffect(() => {
+    if (audioRef.current) {
+      if (playing) {
+        audioRef.current.play().catch(e => console.log("Play prevented:", e));
+      } else {
+        audioRef.current.pause();
+      }
+    }
+  }, [playing]);
+
+  // Handle volume changes
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.volume = volume;
+    }
+  }, [volume]);
 
   // Animate music notes when playing
   useEffect(() => {
@@ -130,11 +159,18 @@ export default function FloatingMusicPlayer() {
             </div>
 
             <p className="text-xs text-center mt-3" style={{ color: 'rgba(255,179,200,0.5)' }}>
-              Replace with your romantic song 💕
+              (Playing sample romantic track) 💕
             </p>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Hidden Audio Element */}
+      <audio
+        ref={audioRef}
+        src={SONGS[songIndex].src}
+        loop
+      />
 
       {/* Main toggle button */}
       <motion.button
