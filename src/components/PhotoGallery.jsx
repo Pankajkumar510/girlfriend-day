@@ -58,102 +58,88 @@ const PHOTOS = [
   },
 ];
 
-function PhotoCard({ photo, index }) {
-  const [lightbox, setLightbox] = useState(false);
+// Split photos into columns for masonry layout
+function splitIntoColumns(photos, numCols) {
+  const cols = Array.from({ length: numCols }, () => []);
+  photos.forEach((photo, i) => cols[i % numCols].push({ ...photo, index: i }));
+  return cols;
+}
+
+function PhotoCard({ photo, onClick }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, amount: 0.2 });
+  const isInView = useInView(ref, { once: true, amount: 0.1 });
 
   return (
-    <>
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay: photo.index * 0.07, ease: 'easeOut' }}
+      className="relative cursor-pointer group mb-4"
+      onClick={() => onClick(photo)}
+      data-hoverable
+    >
       <motion.div
-        ref={ref}
-        initial={{ opacity: 0, scale: 0.85, y: 30 }}
-        animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
-        transition={{ duration: 0.6, delay: index * 0.1, ease: 'easeOut' }}
-        className="relative cursor-pointer group"
-        onClick={() => setLightbox(true)}
-        data-hoverable
+        className="rounded-2xl overflow-hidden relative"
+        whileHover={{ scale: 1.02, y: -4 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          border: '1px solid rgba(255,107,157,0.25)',
+          boxShadow: '0 4px 24px rgba(255,107,157,0.1)',
+        }}
       >
-        {/* Card */}
-        <motion.div
-          className="w-full rounded-2xl overflow-hidden relative"
-          whileHover={{ scale: 1.03, y: -6 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          style={{
-            border: '1px solid rgba(255,107,157,0.3)',
-            boxShadow: '0 8px 30px rgba(255,107,157,0.15)',
-          }}
-        >
-          {/* Real image */}
-          <img
-            src={photo.src}
-            alt={photo.label}
-            className="w-full h-64 object-cover block"
-            style={{ objectPosition: 'top center' }}
-          />
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-            <p className="font-script text-sm text-white">{photo.label}</p>
-          </div>
-        </motion.div>
+        {/* Full photo — no fixed height, no cropping */}
+        <img
+          src={photo.src}
+          alt={photo.label}
+          className="w-full block"
+          style={{ display: 'block' }}
+        />
+        {/* Elegant hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-400 flex flex-col items-center justify-end pb-5 px-4">
+          <p className="font-script text-base text-white drop-shadow-lg">{photo.label}</p>
+          <p className="font-body text-xs text-white/60 mt-1">Tap to open</p>
+        </div>
+        {/* Subtle glow border on hover */}
+        <div
+          className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
+          style={{ boxShadow: 'inset 0 0 0 1.5px rgba(255,107,157,0.5)' }}
+        />
       </motion.div>
-
-      {/* Lightbox */}
-      <AnimatePresence>
-        {lightbox && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setLightbox(false)}
-            className="fixed inset-0 flex flex-col items-center justify-center z-[9000] p-6"
-            style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(30px)' }}
-          >
-            <motion.div
-              initial={{ scale: 0.7, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.7, opacity: 0 }}
-              transition={{ type: 'spring', stiffness: 220, damping: 26 }}
-              onClick={e => e.stopPropagation()}
-              className="relative max-w-sm w-full"
-            >
-              <img
-                src={photo.src}
-                alt={photo.label}
-                className="w-full rounded-3xl shadow-2xl"
-                style={{ border: '2px solid rgba(255,107,157,0.5)' }}
-              />
-              <div className="mt-4 text-center">
-                <p className="font-script text-xl" style={{ color: '#ffb3c6' }}>{photo.label}</p>
-                <p className="font-body text-sm mt-1" style={{ color: 'rgba(255,200,220,0.7)' }}>{photo.caption}</p>
-              </div>
-              <button
-                onClick={() => setLightbox(false)}
-                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center bg-black/40 text-white/70 hover:text-white hover:bg-black/60 transition-all text-lg"
-              >
-                ×
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+    </motion.div>
   );
 }
 
 export default function PhotoGallery() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.1 });
+  const [lightboxPhoto, setLightboxPhoto] = useState(null);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const openLightbox = (photo) => {
+    setLightboxPhoto(photo);
+    setLightboxIndex(photo.id);
+  };
+
+  const navigate = (dir) => {
+    const next = (lightboxIndex + dir + PHOTOS.length) % PHOTOS.length;
+    setLightboxIndex(next);
+    setLightboxPhoto(PHOTOS[next]);
+  };
+
+  // 3 columns on desktop, 2 on tablet, 1 on mobile (via CSS)
+  const cols3 = splitIntoColumns(PHOTOS, 3);
+  const cols2 = splitIntoColumns(PHOTOS, 2);
 
   return (
     <section
       id="gallery"
-      className="relative py-20 px-6"
+      className="relative py-20 px-4 md:px-6"
       style={{
         background: 'linear-gradient(180deg, #0d0014 0%, #1a0030 50%, #0d001e 100%)',
       }}
     >
-      <div className="max-w-5xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12" ref={ref}>
           <motion.p
@@ -180,17 +166,105 @@ export default function PhotoGallery() {
             className="font-body mt-4 text-sm"
             style={{ color: 'rgba(255,179,200,0.6)' }}
           >
-            Click on a photo to view it 💕
+            Tap any photo to view it in full 💕
           </motion.p>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        {/* Masonry Grid — 3 columns on lg, 2 on sm, 1 on xs */}
+        {/* Desktop 3-col */}
+        <div className="hidden lg:flex gap-4 items-start">
+          {cols3.map((col, ci) => (
+            <div key={ci} className="flex-1 flex flex-col">
+              {col.map((photo) => (
+                <PhotoCard key={photo.id} photo={photo} onClick={openLightbox} />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Tablet 2-col */}
+        <div className="hidden sm:flex lg:hidden gap-4 items-start">
+          {cols2.map((col, ci) => (
+            <div key={ci} className="flex-1 flex flex-col">
+              {col.map((photo) => (
+                <PhotoCard key={photo.id} photo={photo} onClick={openLightbox} />
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Mobile 1-col */}
+        <div className="flex sm:hidden flex-col gap-4">
           {PHOTOS.map((photo, i) => (
-            <PhotoCard key={photo.id} photo={photo} index={i} />
+            <PhotoCard key={photo.id} photo={{ ...photo, index: i }} onClick={openLightbox} />
           ))}
         </div>
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxPhoto && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setLightboxPhoto(null)}
+            className="fixed inset-0 flex items-center justify-center z-[9000] p-4"
+            style={{ background: 'rgba(0,0,0,0.93)', backdropFilter: 'blur(30px)' }}
+          >
+            <motion.div
+              initial={{ scale: 0.75, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.75, opacity: 0 }}
+              transition={{ type: 'spring', stiffness: 240, damping: 26 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative flex flex-col items-center"
+              style={{ maxWidth: '90vw', maxHeight: '90vh' }}
+            >
+              <img
+                src={lightboxPhoto.src}
+                alt={lightboxPhoto.label}
+                className="rounded-2xl shadow-2xl"
+                style={{
+                  maxHeight: '75vh',
+                  maxWidth: '90vw',
+                  width: 'auto',
+                  objectFit: 'contain',
+                  border: '2px solid rgba(255,107,157,0.4)',
+                }}
+              />
+              <div className="mt-4 text-center px-4">
+                <p className="font-script text-xl" style={{ color: '#ffb3c6' }}>{lightboxPhoto.label}</p>
+                <p className="font-body text-sm mt-1" style={{ color: 'rgba(255,200,220,0.65)' }}>{lightboxPhoto.caption}</p>
+              </div>
+
+              {/* Prev / Next buttons */}
+              <div className="flex gap-4 mt-5">
+                <button
+                  onClick={() => navigate(-1)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg transition-all"
+                  style={{ background: 'rgba(255,107,157,0.2)', border: '1px solid rgba(255,107,157,0.4)' }}
+                >‹</button>
+                <span className="font-body text-xs self-center" style={{ color: 'rgba(255,179,200,0.5)' }}>
+                  {lightboxIndex + 1} / {PHOTOS.length}
+                </span>
+                <button
+                  onClick={() => navigate(1)}
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-white text-lg transition-all"
+                  style={{ background: 'rgba(255,107,157,0.2)', border: '1px solid rgba(255,107,157,0.4)' }}
+                >›</button>
+              </div>
+
+              {/* Close */}
+              <button
+                onClick={() => setLightboxPhoto(null)}
+                className="absolute top-2 right-2 w-9 h-9 rounded-full flex items-center justify-center text-white/70 hover:text-white text-xl transition-all"
+                style={{ background: 'rgba(0,0,0,0.5)' }}
+              >×</button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }
